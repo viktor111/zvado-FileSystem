@@ -1,4 +1,13 @@
 import os 
+import subprocess
+
+def launch_vim(file_name):
+	command = ["vim", file_name]
+	subprocess.call(command)
+
+def launch_vscode():
+	command = ["code", "."]
+	subprocess.call(command)
 
 def display_file_dat(filename):
 	f = open(filename)
@@ -9,7 +18,7 @@ def list_files():
 	array_of_items = os.listdir()
 	result = ""
 	for item in array_of_items:
-		result += f" {item}" 
+		result += f"	{item}" 
 	print(result)
 
 def change_dir(new_dir):
@@ -22,6 +31,9 @@ def get_current_dir():
 	print(os.getcwd())
 
 def go_back(how_much_back):
+	if how_much_back is None or 0: 
+		print("[-] add correct number")
+		return
 	curren_working_dir = os.getcwd()
 	array_of_dirs = curren_working_dir.split("/")
 	for i in range(how_much_back):
@@ -64,5 +76,16 @@ def read_command():
 		except IndexError:
 			read_command()
 		display_file_dat(filename)
+	if "code ." in command:
+		print("[+] Launching VSCode.....")
+		launch_vscode()
+	if "vim" in command:
+		try:
+			array_commands = command.split()
+			file_name = array_commands[1]
+		except IndexError:
+			read_command()
+		print("[+] Launching vim.....")
+		launch_vim(file_name)
 while True:
 	read_command()
