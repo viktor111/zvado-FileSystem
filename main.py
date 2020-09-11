@@ -70,8 +70,9 @@ def delete_file(name):
 
 def read_command():
 	current_working_dir = os.getcwd()
+	current_logged_user = os.getlogin()
 	try:
-		command = input(f"{current_working_dir} >")
+		command = input(f"{current_logged_user}@{current_working_dir} >")
 	except KeyboardInterrupt:
 		print("[+] Exiting....")
 		sys.exit()
@@ -145,6 +146,9 @@ def read_command():
 			print("[-] Provide file name to delete")
 			read_command()
 		delete_file(name)
+	if "usr" in command:
+		print(os.getlogin())
+		
 			
 while True:
 	read_command()
