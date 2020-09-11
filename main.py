@@ -1,4 +1,5 @@
 import os 
+import sys
 import subprocess
 
 def launch_vim(file_name):
@@ -46,9 +47,35 @@ def go_back(how_much_back):
 	new_dir = new_dir[1 : : ]
 	change_dir(new_dir)
 
+def create_dir(name):
+	current_dir = get_current_dir()
+	os.mkdir(name)
+	
+def delete_dir(name):
+	try:
+		os.rmdir(name)	
+	except (NotADirectoryError, FileNotFoundError):
+		print("[-] Not a direcotry to remove")
+
+def create_file(name):
+	new_file = open(name, "w")
+	new_file.close()
+
+def delete_file(name):
+	try:
+		os.remove(name)
+	except (PermissionError , FileNotFoundError):
+		print("[-] Not a file to remove")
+	
+
 def read_command():
 	current_working_dir = os.getcwd()
-	command = input(f"{current_working_dir} >")
+	try:
+		command = input(f"{current_working_dir} >")
+	except KeyboardInterrupt:
+		print("[+] Exiting....")
+		sys.exit()
+		
 	if "list" in command:
 		list_files()
 	
@@ -87,5 +114,37 @@ def read_command():
 			read_command()
 		print("[+] Launching vim.....")
 		launch_vim(file_name)
+	if "newd" in command:
+		try:
+			array_commands = command.split()
+			name = array_commands[1]
+		except IndexError:
+			print("[-] Please provide a name for new dir")
+			read_command()
+		create_dir(name)
+	if "rmd" in command:
+		try:
+			array_commands = command.split()
+			name = array_commands[1]
+		except IndexError:
+			print("[-] Provide name to delete dir")
+		delete_dir(name)
+	if "newf" in command:
+		try:
+			array_commands = command.split()
+			name = array_commands[1]
+		except IndexError:
+			print("[-] Provide file name to create")
+			read_command()
+		create_file(name)
+	if "rmf" in command:
+		try:
+			array_commands = command.split()
+			name = array_commands[1]
+		except IndexError:
+			print("[-] Provide file name to delete")
+			read_command()
+		delete_file(name)
+			
 while True:
 	read_command()
