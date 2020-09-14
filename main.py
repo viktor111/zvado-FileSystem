@@ -1,6 +1,8 @@
 import os 
+import threading
 import sys
 import subprocess
+import socket
 
 def launch_vim(file_name):
 	command = ["vim", file_name]
@@ -31,6 +33,11 @@ def change_dir(new_dir):
 def get_current_dir():
 	print(os.getcwd())
 
+def list_info():
+	info = os.uname()
+	for i in info:
+		print(i)
+
 def go_back(how_much_back):
 	if how_much_back is None or 0: 
 		print("[-] add correct number")
@@ -49,7 +56,10 @@ def go_back(how_much_back):
 
 def create_dir(name):
 	current_dir = get_current_dir()
-	os.mkdir(name)
+	try:
+		os.mkdir(name)
+	except FileExistsError:
+		print(f"[-] Dir with name - {name} - already exists")
 	
 def delete_dir(name):
 	try:
@@ -66,6 +76,11 @@ def delete_file(name):
 		os.remove(name)
 	except (PermissionError , FileNotFoundError):
 		print("[-] Not a file to remove")
+
+def threaded_port_scan(url):
+	remote_server_ip = socket.gethostbyname(url)
+	print(remote_server_ip)
+	return
 	
 
 def read_command():
@@ -148,7 +163,21 @@ def read_command():
 		delete_file(name)
 	if "usr" in command:
 		print(os.getlogin())
-		
-			
-while True:
-	read_command()
+	if "linfo" in command:
+		list_info()
+	if "portscan" in command:
+		try:
+			array_commands = command.split()
+			url = array_commands[1]
+		except IndexError:
+			print("[-] Provide more arguments")	
+			read_command()
+		thread1 = threading.Thread(target=threaded_port_scan, args=[url])
+		thread1.start()
+
+def main_thread():
+	while True:
+		read_command()
+
+main_program = threading.Thread(target=main_thread())
+main_program.start()
